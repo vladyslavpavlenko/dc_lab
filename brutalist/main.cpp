@@ -1,5 +1,6 @@
 // export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-// clang++ -std=c++20 -fopenmp main.cpp -o brutalist && ./brutalist
+// clang++ -std=c++20 -fopenmp main.cpp -o brutalist
+// OMP_NUM_THREADS=8 ./brutalist
 
 #include <omp.h>
 #include <iostream>
