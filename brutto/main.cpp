@@ -35,7 +35,6 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    // 1) Prompt and read target on rank 0
     std::string target;
     int n;
     if (rank == 0) {
@@ -47,7 +46,6 @@ int main(int argc, char** argv) {
     if (rank != 0) target.resize(n);
     MPI_Bcast(const_cast<char*>(target.data()), n, MPI_CHAR, 0, MPI_COMM_WORLD);
 
-    // 2) Compute total_space = k^n with overflow check
     uint64_t total_space = 1;
     for (int i = 0; i < n; ++i) {
         if (total_space > UINT64_MAX / k) {
@@ -58,7 +56,6 @@ int main(int argc, char** argv) {
         total_space *= k;
     }
 
-    // 3) Map target to numeric index
     uint64_t target_idx = 0;
     for (char c : target) {
         size_t pos = alphabet.find(c);
@@ -70,7 +67,6 @@ int main(int argc, char** argv) {
         target_idx = target_idx * k + pos;
     }
 
-    // 4) Parallel brute-force with early exit via MPI_Allreduce
     uint64_t local_count = 0;
     bool local_found = false;
 
@@ -98,7 +94,6 @@ int main(int argc, char** argv) {
     }
     double t1 = MPI_Wtime();
 
-    // 5) Gather counts and found flags on rank 0
     std::vector<uint64_t> counts(size);
     MPI_Gather(&local_count, 1, MPI_UNSIGNED_LONG_LONG,
                counts.data(),    1, MPI_UNSIGNED_LONG_LONG,
